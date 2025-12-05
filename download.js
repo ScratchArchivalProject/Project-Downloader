@@ -94,6 +94,8 @@ if (fs.existsSync(filePath)) {
 
             if (success) {
 
+                // scratch assets can be either svg or png (bitmap)
+
                 const isSvg = costume.md5ext.endsWith('.svg');
 
                 let data;
