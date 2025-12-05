@@ -12,7 +12,7 @@ npm i
 to install the dependencies for scget. There's only one, that being `archiver` to package the assets and json into a final zip file, because SB3 files are just renamed zip files.
 
 # Usage
-
+Arguments are in the code, specifically `ID` and `OUTPUT_FILE`.
 ```bash
 node download.js
 ```
