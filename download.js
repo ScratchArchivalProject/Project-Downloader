@@ -3,11 +3,11 @@ const archiver = require("archiver");
 const path = require("path");
 
 // project id to download
-const ID = 1147739568;
+const ID = 1212128208;
 
 // always make sure to end this with sb3
 // for archiving, we'd probably want the project name to be the id
-const OUTPUT_FILE = "snake.sb3";
+const OUTPUT_FILE = "worst_case_scenario.sb3";
 
 // safe for cross platform
 const filePath = path.join(__dirname, OUTPUT_FILE);
@@ -83,8 +83,10 @@ if (fs.existsSync(filePath)) {
             let response;
             let success = true;
 
+            const md5ext = `${costume.assetId}.${costume.dataFormat}`;
+
             try {
-                const url = `https://assets.scratch.mit.edu/internalapi/asset/${costume.md5ext}/get/`;
+                const url = `https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`;
                 response = await fetch(url);
 
             } catch (error) {
@@ -94,9 +96,10 @@ if (fs.existsSync(filePath)) {
 
             if (success) {
 
-                // scratch assets can be either svg or png (bitmap)
+                // scratch assets can be either .svg or .png (bitmap)
+                // the md5ext field is not reliable, and often not present, so we generate our own before
 
-                const isSvg = costume.md5ext.endsWith('.svg');
+                const isSvg = (costume.dataFormat === 'svg') ? true : false;
 
                 let data;
 
@@ -107,7 +110,7 @@ if (fs.existsSync(filePath)) {
                     data = Buffer.from(arrayBuffer);
                 }
 
-                archive.append(data, { name: `${costume.md5ext}` });
+                archive.append(data, { name: `${md5ext}` });
 
             }
 
@@ -117,11 +120,15 @@ if (fs.existsSync(filePath)) {
 
             assetNumber++;
 
+            const md5ext = `${sound.assetId}.${sound.dataFormat}`;
+
             let success = true;
             let buffer;
 
+            // not sure all the audio formats scratch uses, so should look into this
+
             try {
-                const url = `https://assets.scratch.mit.edu/internalapi/asset/${sound.md5ext}/get/`;
+                const url = `https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`;
                 buffer = Buffer.from(await (await fetch(url)).arrayBuffer());
             } catch (error) {
                 success = false;
@@ -129,7 +136,7 @@ if (fs.existsSync(filePath)) {
             }
 
             if (success) {
-                archive.append(buffer, { name: `${sound.md5ext}` });
+                archive.append(buffer, { name: `${md5ext}` });
             }
 
         }
@@ -140,4 +147,3 @@ if (fs.existsSync(filePath)) {
     await archive.finalize();
     console.log(`SB3 file written: ${OUTPUT_FILE}`);
 })();
-
